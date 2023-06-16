@@ -301,6 +301,12 @@ public class MainController extends Database {
 
     // FIN METHODE LIEU
 
+    // DEBUT METHODE AFFECTATION
+
+
+
+    // FIN METHODE AFFECTATION
+
     public void initialize(){
 
         ObservableList<String> options = FXCollections.observableArrayList("Mlle", "Mme", "Mr");
