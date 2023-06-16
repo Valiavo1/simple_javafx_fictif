@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="622.0" prefWidth="861.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.fictif.controller.MainController">
+   <children>
+      <TabPane prefHeight="724.0" prefWidth="932.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Employe">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="14.0" layoutY="92.0" prefHeight="442.0" prefWidth="201.0" spacing="15.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Civilité" />
+                              <ComboBox fx:id="civiliteCombo" prefWidth="150.0" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nom" />
+                              <TextField fx:id="addNom" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Prénoms" />
+                              <TextField fx:id="addPrenoms" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Mail" />
+                              <TextField fx:id="addMail" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Poste" />
+                              <TextField fx:id="addPost" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Province" />
+                              <ComboBox fx:id="provinceComboEmploye" onContextMenuRequested="#loadLieu" onDragDone="#loadLieu" prefWidth="150.0" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lieu" />
+                              <ComboBox fx:id="lieuCombo" prefWidth="150.0" />
+                           </children>
+                        </VBox>
+                        <TableView fx:id="tableEmploye" layoutX="237.0" layoutY="70.0" prefHeight="486.0" prefWidth="692.0" />
+                        <ButtonBar layoutX="290.0" layoutY="581.0" prefHeight="40.0" prefWidth="346.0">
+                          <buttons>
+                            <Button fx:id="creerEmpl" mnemonicParsing="false" onMousePressed="#handleAddEmploye" text="Créer" />
+                              <Button layoutX="392.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#updateEmploye" text="Editer" />
+                              <Button layoutX="307.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#deleteEmploye" text="Supprimer" />
+                              <Button layoutX="222.0" layoutY="17.0" mnemonicParsing="false" text="Affecter" />
+                              <Button layoutX="288.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#confirmUpdateEmploye" text="Confirmer" />
+                          </buttons>
+                        </ButtonBar>
+                        <TextField fx:id="searchField" layoutX="509.0" layoutY="27.0" onKeyPressed="#setSearch" prefHeight="26.0" prefWidth="382.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Lieu">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="14.0" layoutY="144.0" prefHeight="204.0" prefWidth="202.0" spacing="15.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Province" />
+                              <ComboBox fx:id="provinceCombo" prefWidth="150.0" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Désignation" />
+                              <TextField fx:id="designField" />
+                           </children>
+                        </VBox>
+                        <TableView fx:id="tableLieu" layoutX="237.0" layoutY="70.0" prefHeight="486.0" prefWidth="692.0" />
+                        <ButtonBar layoutX="332.0" layoutY="579.0" prefHeight="40.0" prefWidth="249.0">
+                           <buttons>
+                              <Button fx:id="createLieu" mnemonicParsing="false" onMouseClicked="#handleAddLieu" text="Créer" />
+                              <Button fx:id="editLieu" layoutX="392.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#updateLieu" text="Editer" />
+                              <Button fx:id="deleteLieu" layoutX="307.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#deleteLieu" text="Supprimer" />
+                              <Button fx:id="confirmEditLieu" layoutX="202.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#confirmUpdateLieu" text="Confirmer" />
+                           </buttons>
+                        </ButtonBar>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Affectation">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox layoutX="14.0" layoutY="144.0" prefHeight="410.0" prefWidth="202.0" spacing="15.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Numéro Employe" />
+                              <TextField />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Ancien Lieu" />
+                              <TextField layoutX="10.0" layoutY="41.0" />
+                              <Text layoutX="10.0" layoutY="97.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nouveau Lieu" />
+                              <TextField layoutX="10.0" layoutY="116.0" />
+                              <Text layoutX="10.0" layoutY="169.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date Affectation" />
+                              <TextField layoutX="10.0" layoutY="190.0" />
+                              <Text layoutX="10.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date Prise de Service" />
+                              <TextField layoutX="10.0" layoutY="264.0" />
+                           </children>
+                        </VBox>
+                        <TableView layoutX="237.0" layoutY="70.0" prefHeight="486.0" prefWidth="692.0">
+                           <columns>
+                              <TableColumn prefWidth="156.0" text="Identifiant" />
+                              <TableColumn prefWidth="263.1999816894531" text="Désignation" />
+                              <TableColumn prefWidth="275.2000732421875" text="Province" />
+                           </columns>
+                        </TableView>
+                        <ButtonBar layoutX="332.0" layoutY="579.0" prefHeight="40.0" prefWidth="249.0">
+                           <buttons>
+                              <Button mnemonicParsing="false" text="PDF" />
+                              <Button layoutX="392.0" layoutY="17.0" mnemonicParsing="false" text="Editer" />
+                              <Button layoutX="307.0" layoutY="17.0" mnemonicParsing="false" text="Supprimer" />
+                           </buttons>
+                        </ButtonBar>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
