@@ -187,7 +187,8 @@ public class MainController extends Database {
         addPost.setText(selectedEmploye.getPoste());
         addMail.setText(selectedEmploye.getMail());
         civiliteCombo.getSelectionModel().select(selectedEmploye.getCivilite());
-        lieuCombo.getSelectionModel().select(LieuDAO.findLieu(selectedEmploye.getLieu()));
+        provinceCombo.getSelectionModel().select(LieuDAO.getProvince(selectedEmploye.getLieu()));
+        lieuCombo.getSelectionModel().select(selectedEmploye.getLieu());
         tmpNumEmploye = selectedEmploye.getNum_empl();
     }
 

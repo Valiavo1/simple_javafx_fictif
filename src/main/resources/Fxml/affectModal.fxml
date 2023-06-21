@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane fx:id="modalAffectLabel" prefHeight="660.0" prefWidth="347.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.fictif.controller.AffectationController">
    <children>
       <VBox layoutX="68.0" layoutY="26.0" prefHeight="386.0" prefWidth="210.0" spacing="10.0">
@@ -40,7 +39,6 @@
             </ButtonBar>
          </children>
       </VBox>
-      <ButtonBar layoutX="82.0" layoutY="430.0" prefHeight="40.0" prefWidth="130.0" />
     <Button fx:id="cancelButton" layoutX="97.0" layoutY="619.0" mnemonicParsing="false" onAction="#cancelAffect" text="Annuler" />
       <Button fx:id="addAffectButton" layoutX="174.0" layoutY="619.0" mnemonicParsing="false" onAction="#addAffect" text="Ajouter" />
    </children>
