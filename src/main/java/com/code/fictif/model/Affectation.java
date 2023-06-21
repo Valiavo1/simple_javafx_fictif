@@ -6,10 +6,12 @@ import java.util.Date;
 public class Affectation {
     private String  num_affect;
     private String  num_empl;
+    private String nom_empl;
+    private String prenoms_empl;
     private String  ancien_lieu;
     private String  nouveau_lieu;
-    private Date date_affect;
-    private Date date_priseservice;
+    private java.sql.Date date_affect;
+    private java.sql.Date date_priseservice;
 
 
     public String getNum_affect() {
@@ -19,6 +21,11 @@ public class Affectation {
     public void setNum_affect(String num_affect) {
         this.num_affect = num_affect;
     }
+
+    public String getNom_empl() {return nom_empl;}
+    public void setNom_empl(String nom) {this.nom_empl = nom;}
+    public String getPrenoms_empl() {return prenoms_empl;}
+    public void setPrenoms_empl(String prenoms) {this.prenoms_empl = prenoms;}
 
     public String getNum_empl() {
         return num_empl;
@@ -44,19 +51,19 @@ public class Affectation {
         this.nouveau_lieu = nouveau_lieu;
     }
 
-    public Date getDate_affect() {
+    public java.sql.Date getDate_affect() {
         return date_affect;
     }
 
-    public void setDate_affect(Date date_affect) {
+    public void setDate_affect(java.sql.Date date_affect) {
         this.date_affect = date_affect;
     }
 
-    public Date getDate_priseservice(Date date_priseservice) {
+    public java.sql.Date getDate_priseservice() {
         return date_priseservice;
     }
 
-    public void setDate_priseservice(Date date_priseservice) {
+    public void setDate_priseservice(java.sql.Date date_priseservice) {
         this.date_priseservice = date_priseservice;
     }
 }

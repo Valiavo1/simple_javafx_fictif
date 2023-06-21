@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane fx:id="modalAffectLabel" prefHeight="660.0" prefWidth="347.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.code.fictif.controller.AffectationController">
+   <children>
+      <VBox layoutX="68.0" layoutY="26.0" prefHeight="386.0" prefWidth="210.0" spacing="10.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Numéro employé" />
+            <TextField fx:id="num_empl" editable="false" />
+            <Text layoutX="10.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nom employé" />
+            <TextField fx:id="nom_empl" editable="false" layoutX="10.0" layoutY="27.0" />
+            <Text layoutX="10.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Prénoms employé" />
+            <TextField fx:id="prenoms_empl" editable="false" layoutX="10.0" layoutY="69.0" prefHeight="25.0" prefWidth="419.0" />
+            <Text layoutX="10.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ancien lieu" />
+            <TextField fx:id="lieu_empl" editable="false" layoutX="10.0" layoutY="111.0" />
+            <Text layoutX="10.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Poste" />
+            <TextField fx:id="posteField" />
+            <Text layoutX="10.0" layoutY="149.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nouvelle province" />
+            <ComboBox fx:id="new_prov" prefWidth="150.0" />
+            <Text layoutX="10.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nouveau lieu" />
+            <ComboBox fx:id="new_lieu" prefWidth="150.0" />
+            <Text layoutX="10.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date affectation" />
+            <DatePicker fx:id="date_affect" />
+            <Text layoutX="10.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Date prise de service" />
+            <DatePicker fx:id="date_service" layoutX="10.0" layoutY="277.0" />
+            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+               <buttons>
+                  <Pane prefHeight="68.0" prefWidth="337.0" />
+               </buttons>
+            </ButtonBar>
+         </children>
+      </VBox>
+      <ButtonBar layoutX="82.0" layoutY="430.0" prefHeight="40.0" prefWidth="130.0" />
+    <Button fx:id="cancelButton" layoutX="97.0" layoutY="619.0" mnemonicParsing="false" onAction="#cancelAffect" text="Annuler" />
+      <Button fx:id="addAffectButton" layoutX="174.0" layoutY="619.0" mnemonicParsing="false" onAction="#addAffect" text="Ajouter" />
+   </children>
+</AnchorPane>

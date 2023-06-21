@@ -151,4 +151,28 @@ public class LieuDAO extends Database {
         }
         return null;
     }
+
+    public static String getProvince(String id_lieu) {
+        ResultSet oneLieu = null;
+        try{
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM lieu WHERE id_lieu = ?");
+            stmt.setString(1, id_lieu);
+            oneLieu = stmt.executeQuery();
+            String lieuSelected = null;
+            while (oneLieu.next()) {
+                Lieu tmpEmp = new Lieu();
+                tmpEmp.setId_lieu(oneLieu.getString("id_lieu"));
+                tmpEmp.setDesign(oneLieu.getString("design"));
+                tmpEmp.setProvince(oneLieu.getString("province"));
+
+                lieuSelected = tmpEmp.getProvince();
+            }
+
+            return  lieuSelected;
+
+        } catch (SQLException e) {
+            System.out.println("error");
+        }
+        return null;
+    }
 }

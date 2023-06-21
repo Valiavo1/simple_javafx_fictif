@@ -1,18 +1,29 @@
 package com.code.fictif.controller;
 
+import com.code.fictif.dao.AffectationDAO;
 import com.code.fictif.dao.EmployeDAO;
 import com.code.fictif.dao.LieuDAO;
+import com.code.fictif.model.Affectation;
 import com.code.fictif.model.Employe;
 import com.code.fictif.model.Lieu;
 import com.code.fictif.util.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +72,9 @@ public class MainController extends Database {
     @FXML
     private TextField searchField;
 
-    @FXML
-    public void setSearch(KeyEvent event) {
-
-    }
-
     private String tmpNumEmploye;
+
+    private Boolean boolAffect = false;
 
     //FIN EMPLOYE
 
@@ -90,6 +98,54 @@ public class MainController extends Database {
     private String tmpIdLieu;
 
     // FIN LIEU
+
+    // DEBUT AFFECTATION
+    @FXML
+    private Button updateAffButtonConfirm;
+
+    @FXML
+    private TextField ancien_lieu;
+
+    @FXML
+    private TextField searchAffEmploye;
+
+    @FXML
+    private DatePicker date_affectAff;
+
+    @FXML
+    private DatePicker date_serviceAff;
+
+    @FXML
+    private TextField num_emplAff;
+
+    @FXML
+    private ComboBox<String> new_lieu;
+
+    @FXML
+    private ComboBox<String> new_prov;
+
+    @FXML
+    private DatePicker dateDebut;
+
+    @FXML
+    private DatePicker dateFin;
+
+
+    @FXML
+    private TableView<Affectation> tableAffectation;
+
+    private TableColumn<Affectation, String> numAffectCol = new TableColumn<>("N° Affectation");
+    private TableColumn<Affectation, String> numEmployeCol = new TableColumn<>("N° Employé");
+    private TableColumn<Affectation, String> nomEmployeCol = new TableColumn<>("Nom Employé");
+    private TableColumn<Affectation, String> prenomsEmployeCol = new TableColumn<>("Prénoms Employé");
+    private TableColumn<Affectation, String> ancienLieuCol = new TableColumn<>("Ancien Lieu");
+    private TableColumn<Affectation, String> nouveauLieuCol = new TableColumn<>("Nouveau Lieu");
+    private TableColumn<Affectation, Date> dateAffectCol = new TableColumn<>("Date d'affectation");
+    private TableColumn<Affectation, Date> datePriseCol = new TableColumn<>("Date de prise de service");
+
+    private String tmpNumAffect;
+
+    // FIN AFFECTATION
 
 
     // DEBUT METHODE EMPLOYE
@@ -182,6 +238,29 @@ public class MainController extends Database {
         }
     }
 
+    public void affectEmploye(ActionEvent actionEvent) throws IOException {
+        Employe selectedEmploye = tableEmploye.getSelectionModel().getSelectedItem();
+        if (selectedEmploye == null) {
+            showAlert(Alert.AlertType.WARNING, "Aucune sélection", "Aucun employé sélectionné", "Veuillez sélectionner un employé à éditer.");
+            return;
+        }
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Fxml/affectModal.fxml"));
+            Parent parent = fxmlLoader.load();
+            AffectationController tmpController = fxmlLoader.getController();
+
+            tmpController.getEmploye(selectedEmploye);
+
+            Stage modalStage = new Stage();
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.setTitle("Affecter un employé");
+            modalStage.setScene(new Scene(parent));
+            modalStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setTableEmploye() {
         numEmplCol.setCellValueFactory(new PropertyValueFactory<>("num_empl"));
         civiliteCol.setCellValueFactory(new PropertyValueFactory<>("civilite"));
@@ -191,8 +270,12 @@ public class MainController extends Database {
         posteCol.setCellValueFactory(new PropertyValueFactory<>("poste"));
         lieuCol.setCellValueFactory(new PropertyValueFactory<>("lieu"));
         EmployeDAO tmpDAO = new EmployeDAO();
-        List<Employe> employes = tmpDAO.all();
-
+        List<Employe> employes = new ArrayList<>();;
+        if (this.boolAffect) {
+            employes = tmpDAO.getAllAffectationNotAffected(search);
+        } else {
+            employes = tmpDAO.all(search);
+        }
 
         if (tableEmploye.getColumns().isEmpty()) {
             tableEmploye.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -208,6 +291,13 @@ public class MainController extends Database {
         lieuCombo.getItems().clear();
         lieuCombo.getItems().addAll(designations);
     }
+
+    public void nonAffectEmploye() {
+        this.boolAffect = ! this.boolAffect;
+        setTableEmploye();
+    }
+
+
 
     // FIN METHODE EMPLOYE
 
@@ -246,18 +336,18 @@ public class MainController extends Database {
         }
     }
 
-    @FXML
-    public void updateLieu(MouseEvent event) {
-        Lieu selectedLieu = tableLieu.getSelectionModel().getSelectedItem();
-        if (selectedLieu == null) {
-            showAlert(Alert.AlertType.WARNING, "Aucune sélection", "Aucun employé sélectionné", "Veuillez sélectionner un employé à éditer.");
-            return;
-        }
+        @FXML
+        public void updateLieu(MouseEvent event) {
+            Lieu selectedLieu = tableLieu.getSelectionModel().getSelectedItem();
+            if (selectedLieu == null) {
+                showAlert(Alert.AlertType.WARNING, "Aucune sélection", "Aucun employé sélectionné", "Veuillez sélectionner un employé à éditer.");
+                return;
+            }
 
-        designField.setText(selectedLieu.getDesign());
-        provinceCombo.getSelectionModel().select(selectedLieu.getProvince());
-        tmpIdLieu = selectedLieu.getId_lieu();
-    }
+            designField.setText(selectedLieu.getDesign());
+            provinceCombo.getSelectionModel().select(selectedLieu.getProvince());
+            tmpIdLieu = selectedLieu.getId_lieu();
+        }
 
     @FXML
     public void confirmUpdateLieu(MouseEvent event) {
@@ -286,15 +376,15 @@ public class MainController extends Database {
 
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmationAlert.setTitle("Confirmation de suppression");
-        confirmationAlert.setHeaderText("Suppression de l'employé");
-        confirmationAlert.setContentText("Êtes-vous sûr de vouloir supprimer l'employé sélectionné ?");
+        confirmationAlert.setHeaderText("Suppression d'un lieu");
+        confirmationAlert.setContentText("Êtes-vous sûr de vouloir supprimer le lieu sélectionné ?");
         Optional<ButtonType> result = confirmationAlert.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
             LieuDAO lieuDAO = new LieuDAO();
             lieuDAO.deleteLieu(selectedLieu.getId_lieu());
             setTableLieu();
-            showAlert(Alert.AlertType.INFORMATION, "Suppression réussie", "Employé supprimé", "L'employé a été supprimé avec succès.");
+            showAlert(Alert.AlertType.INFORMATION, "Suppression réussie", "Lieu supprimé", "Le lieu a été supprimé avec succès.");
         }
     }
 
@@ -303,7 +393,104 @@ public class MainController extends Database {
 
     // DEBUT METHODE AFFECTATION
 
+    public void setTableAffectation() {
+        numAffectCol.setCellValueFactory(new PropertyValueFactory<>("num_affect"));
+        numEmployeCol.setCellValueFactory(new PropertyValueFactory<>("num_empl"));
+        nomEmployeCol.setCellValueFactory(new PropertyValueFactory<>("nom_empl"));
+        prenomsEmployeCol.setCellValueFactory(new PropertyValueFactory<>("prenoms_empl"));
+        ancienLieuCol.setCellValueFactory(new PropertyValueFactory<>("ancien_lieu"));
+        nouveauLieuCol.setCellValueFactory(new PropertyValueFactory<>("nouveau_lieu"));
+        dateAffectCol.setCellValueFactory(new PropertyValueFactory<>("date_affect"));
+        datePriseCol.setCellValueFactory(new PropertyValueFactory<>("date_priseservice"));
 
+        Date deb = null;
+        Date fin = null;
+
+        if (dateDebut.getValue() != null && dateFin.getValue() != null) {
+            deb = Date.valueOf(dateDebut.getValue());
+            fin = Date.valueOf(dateFin.getValue());
+        } else if (dateDebut.getValue() != null && dateFin.getValue() == null) {
+            deb = Date.valueOf(dateDebut.getValue());
+        } else if (dateDebut.getValue() == null && dateFin.getValue() != null) {
+            fin = Date.valueOf(dateFin.getValue());
+        }
+
+        List<Affectation> affects = AffectationDAO.all(search, deb, fin);
+
+        if (tableAffectation != null) {
+            if (tableAffectation.getColumns().isEmpty()) {
+                tableAffectation.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+                tableAffectation.getColumns().addAll(numAffectCol, numEmployeCol, nomEmployeCol, prenomsEmployeCol, ancienLieuCol, nouveauLieuCol,dateAffectCol, datePriseCol);
+            }
+
+            tableAffectation.getItems().setAll(affects);
+        }
+    }
+
+    @FXML
+    void changeDebDate(ActionEvent event) {
+        setTableAffectation();
+    }
+
+    @FXML
+    void changeFinDate(ActionEvent event) {
+        setTableAffectation();
+    }
+
+    @FXML
+    void updateAffect(ActionEvent event) {
+        Affectation selectedAffect = tableAffectation.getSelectionModel().getSelectedItem();
+        if (selectedAffect == null) {
+            showAlert(Alert.AlertType.WARNING, "Aucune sélection", "Aucun employé sélectionné", "Veuillez sélectionner un employé à éditer.");
+            return;
+        }
+
+        this.tmpNumAffect = selectedAffect.getNum_affect();
+        num_emplAff.setText(selectedAffect.getNum_empl());
+        ancien_lieu.setText(selectedAffect.getAncien_lieu());
+        new_prov.getSelectionModel().select(LieuDAO.getProvince(selectedAffect.getNouveau_lieu()));
+        new_lieu.getSelectionModel().select(LieuDAO.findLieu(selectedAffect.getNouveau_lieu()));
+        date_affectAff.setValue(selectedAffect.getDate_affect().toLocalDate());
+        date_serviceAff.setValue(selectedAffect.getDate_priseservice().toLocalDate());
+    }
+
+    public void loadLieuAff(MouseEvent event) {
+        List<String> designations = LieuDAO.getLieuDesignations(new_prov.getSelectionModel().getSelectedItem());
+        System.out.println(designations);
+        new_lieu.getItems().clear();
+        new_lieu.getItems().addAll(designations);
+    }
+
+    @FXML
+    void confirmUpdateAff(ActionEvent event) {
+        Date date_affect = Date.valueOf(date_affectAff.getValue());
+        Date date_serv = Date.valueOf(date_serviceAff.getValue());
+
+        AffectationDAO.updateAffectation(tmpNumAffect, num_emplAff.getText(), ancien_lieu.getText(), LieuDAO.getOneLieu(new_lieu.getSelectionModel().getSelectedItem(), new_prov.getSelectionModel().getSelectedItem()), date_affect, date_serv);
+        setTableAffectation();
+        System.out.println("confirmUpdateAff");
+    }
+
+    @FXML
+    void deleteAff(ActionEvent event) {
+        Affectation selectedAffect = tableAffectation.getSelectionModel().getSelectedItem();
+        if (selectedAffect == null) {
+            showAlert(Alert.AlertType.WARNING, "Aucune sélection", "Aucun employé sélectionné", "Veuillez sélectionner un employé à éditer.");
+            return;
+        }
+
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Confirmation de suppression");
+        confirmationAlert.setHeaderText("Suppression d'une affectation");
+        confirmationAlert.setContentText("Êtes-vous sûr de vouloir supprimer l'affectation sélectionnée ?");
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            AffectationDAO.deleteAffectation(selectedAffect.getNum_affect());
+            setTableAffectation();
+            showAlert(Alert.AlertType.INFORMATION, "Suppression réussie", "Affectation supprimée", "L'affectation a été supprimé avec succès.");
+        }
+    }
 
     // FIN METHODE AFFECTATION
 
@@ -312,16 +499,34 @@ public class MainController extends Database {
         ObservableList<String> options = FXCollections.observableArrayList("Mlle", "Mme", "Mr");
         civiliteCombo.getItems().addAll(options);
 
-        options = FXCollections.observableArrayList("Fianarantsoa", "Antananarivo", "Antsiranana", "Mahajanga", "Toliara", "Toamasina");
+        options = FXCollections.observableArrayList("Antananarivo", "Fianarantsoa", "Antsiranana", "Mahajanga", "Toliara", "Toamasina");
         provinceComboEmploye.getItems().addAll(options);
         provinceCombo.getItems().addAll(options);
+        new_prov.getItems().addAll(options);
 
         provinceComboEmploye.valueProperty().addListener((observable, oldValue, newValue) -> {
             loadLieu(null);
         });
 
+        new_prov.valueProperty().addListener((observable, oldValue, newValue) -> {
+            loadLieuAff(null);
+        });
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            search = searchField.getText();
+            setTableEmploye();
+            System.out.println(search);
+        });
+
+        searchAffEmploye.textProperty().addListener((observable, oldValue, newValue) -> {
+            search = searchAffEmploye.getText();
+            setTableAffectation();
+            System.out.println(search);
+        });
+
         setTableEmploye();
         setTableLieu();
+        setTableAffectation();
     }
 
     public static void showAlert(Alert.AlertType alertType, String erreur, String champsVides, String s) {

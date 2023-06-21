@@ -11,11 +11,18 @@ import java.util.ArrayList;
 import java.util.List;;
 
 public class EmployeDAO extends Database {
-    public List<Employe> all() {
+    public List<Employe> all(String search) {
         ResultSet employeRES = null;
         List<Employe> employes = new ArrayList<>();
         try{
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM employe LEFT OUTER JOIN lieu ON employe.lieu = lieu.id_lieu");
+            PreparedStatement stmt;
+            if (search == null || search.isEmpty())
+                stmt = conn.prepareStatement("SELECT * FROM employe LEFT OUTER JOIN lieu ON employe.lieu = lieu.id_lieu");
+            else {
+                stmt = conn.prepareStatement("SELECT * FROM employe LEFT OUTER JOIN lieu ON employe.lieu = lieu.id_lieu WHERE LOWER(employe.nom) LIKE ? OR LOWER(employe.prenoms) LIKE ?");
+                stmt.setString(1, "%" + search.toLowerCase() + "%");
+                stmt.setString(2, "%" + search.toLowerCase() + "%");
+            }
             employeRES = stmt.executeQuery();
             while (employeRES.next()) {
                 Employe tmpEmp = new Employe();
@@ -30,7 +37,7 @@ public class EmployeDAO extends Database {
                 employes.add(tmpEmp);
             }
         } catch (SQLException e) {
-            System.out.println("error");
+            System.out.println(e);
         }
         return employes;
     }
@@ -97,5 +104,39 @@ public class EmployeDAO extends Database {
         }
     }
 
+    public List<Employe> getAllAffectationNotAffected(String search) {
+        ResultSet employeRES = null;
+        List<Employe> employes = new ArrayList<>();
+        try{
+            PreparedStatement stmt;
+            if (search == null || search.isEmpty())
+                stmt = conn.prepareStatement("SELECT * FROM  employe LEFT OUTER JOIN affectation ON affectation.num_empl = employe.num_empl JOIN lieu ON lieu.id_lieu = employe.lieu WHERE affectation.num_affect IS NULL");
+            else {
+                stmt = conn.prepareStatement("SELECT * FROM employe\n" +
+                        "LEFT OUTER JOIN affectation ON affectation.num_empl = employe.num_empl\n" +
+                        "JOIN lieu ON lieu.id_lieu = employe.lieu\n" +
+                        "WHERE affectation.num_affect IS NULL\n" +
+                        "AND (LOWER(employe.nom) LIKE ? OR LOWER(employe.prenoms) LIKE ?)\n");
+                stmt.setString(1, "%" + search.toLowerCase() + "%");
+                stmt.setString(2, "%" + search.toLowerCase() + "%");
+            }
+            employeRES = stmt.executeQuery();
+            while (employeRES.next()) {
+                Employe tmpEmp = new Employe();
+                tmpEmp.setNum_empl(employeRES.getString("num_empl"));
+                tmpEmp.setCivilite(employeRES.getString("civilite"));
+                tmpEmp.setNom_empl(employeRES.getString("nom"));
+                tmpEmp.setPrenoms_empl(employeRES.getString("prenoms"));
+                tmpEmp.setMail(employeRES.getString("mail"));
+                tmpEmp.setPoste(employeRES.getString("poste"));
+                tmpEmp.setLieu(employeRES.getString("design"));
+
+                employes.add(tmpEmp);
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return employes;
+    }
 }
 
