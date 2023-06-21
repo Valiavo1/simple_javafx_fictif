@@ -46,7 +46,7 @@ public class MainController extends Database {
     private TableColumn<Employe, String> posteCol = new TableColumn<>("Poste");
     private TableColumn<Employe, String> lieuCol = new TableColumn<>("Lieu");
 
-    private String search = null;
+    private String search = "";
 
     @FXML
     private ComboBox<String> lieuCombo;
@@ -406,12 +406,6 @@ public class MainController extends Database {
         Date deb = null;
         Date fin = null;
 
-        String searchD = "";
-
-        if (searchField.getText() != null) {
-            searchD = searchField.getText();
-        }
-
         if (dateDebut.getValue() != null && dateFin.getValue() != null) {
             deb = Date.valueOf(dateDebut.getValue());
             fin = Date.valueOf(dateFin.getValue());
@@ -421,7 +415,7 @@ public class MainController extends Database {
             fin = Date.valueOf(dateFin.getValue());
         }
 
-        List<Affectation> affects = AffectationDAO.all(searchD, deb, fin);
+        List<Affectation> affects = AffectationDAO.all(search, deb, fin);
 
         if (tableAffectation != null) {
             if (tableAffectation.getColumns().isEmpty()) {
