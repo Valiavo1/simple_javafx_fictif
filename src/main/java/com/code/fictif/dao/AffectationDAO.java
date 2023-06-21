@@ -14,70 +14,55 @@ import java.util.List;
 public class AffectationDAO extends Database {
 
     public static List<Affectation> all(String search, Date dateDebut, Date dateFin) {
-        ResultSet affectRES = null;
         List<Affectation> affects = new ArrayList<>();
-        try{
-            String dateQuery;
-            if (dateDebut == null && dateFin == null) {
-                dateQuery = "";
-            } else if (dateDebut != null && dateFin == null) {
-                dateQuery = " AND affectation.date_affect <= ?";
-            } else if (dateDebut == null && dateFin != null) {
-                dateQuery = " AND affectation.date_affect >= ?";
-            } else {
-                dateQuery = " AND affectation.date_affect >= ? AND affectation.date_affect <= ?";
-            }
-            String sqlQuery;
-            PreparedStatement stmt;
-            if (search == null || search.isEmpty()) {
-                sqlQuery = "SELECT * FROM affectation " +
-                        "LEFT JOIN lieu ON affectation.nouveau_lieu = lieu.id_lieu " +
-                        "LEFT JOIN employe ON employe.num_empl = affectation.num_empl"  + dateQuery;
-                stmt = conn.prepareStatement(sqlQuery);
-                if (dateDebut != null && dateFin == null) {
-                    stmt.setDate(1, dateDebut);
-                } else if (dateDebut == null && dateFin != null) {
-                    stmt.setDate(1, dateFin);
-                } else if (dateDebut != null && dateFin != null) {
-                    stmt.setDate(1, dateDebut);
-                    stmt.setDate(2, dateFin);
-                }
-            } else  {
-                sqlQuery = "SELECT * FROM affectation " +
-                        "LEFT JOIN lieu ON affectation.nouveau_lieu = lieu.id_lieu " +
-                        "LEFT JOIN employe ON employe.num_empl = affectation.num_empl " +
-                        "WHERE LOWER(employe.nom) LIKE ? OR LOWER(employe.prenoms) LIKE ? OR LOWER(employe.num_empl) LIKE ?"  + dateQuery;
-                stmt = conn.prepareStatement(sqlQuery);
-                stmt.setString(1, "%" + search.toLowerCase() + "%");  // Search by name
-                stmt.setString(2, "%" + search.toLowerCase() + "%");  // Search by surname
-                stmt.setString(3, "%" + search.toLowerCase() + "%");
+        String dateQuery = "";
+        if (dateDebut != null && dateFin != null) {
+            dateQuery = " AND affectation.date_affect >= ? AND affectation.date_affect <= ?";
+        } else if (dateDebut != null) {
+            dateQuery = " AND affectation.date_affect >= ?";
+        } else if (dateFin != null) {
+            dateQuery = " AND affectation.date_affect <= ?";
+        }
 
-                if (dateDebut != null && dateFin == null) {
-                    stmt.setDate(4, dateDebut);
-                } else if (dateDebut == null && dateFin != null) {
-                    stmt.setDate(4, dateFin);
-                } else if (dateDebut != null && dateFin != null) {
-                    stmt.setDate(4, dateDebut);
-                    stmt.setDate(5, dateFin);
-                }
-            }
-            affectRES = stmt.executeQuery();
-            while (affectRES.next()) {
-                Affectation tmpAffect = new Affectation();
-                tmpAffect.setNum_affect(affectRES.getString("num_affect"));
-                tmpAffect.setNum_empl(affectRES.getString("num_empl"));
-                tmpAffect.setNom_empl(affectRES.getString("nom"));
-                tmpAffect.setPrenoms_empl(affectRES.getString("prenoms"));
-                tmpAffect.setAncien_lieu(affectRES.getString("ancien_lieu"));
-                tmpAffect.setNouveau_lieu(affectRES.getString("design"));
-                tmpAffect.setDate_affect(affectRES.getDate("date_affect"));
-                tmpAffect.setDate_priseservice(affectRES.getDate("date_priseservice"));
+        String sqlQuery = "SELECT * FROM affectation " +
+                "LEFT JOIN lieu ON affectation.nouveau_lieu = lieu.id_lieu " +
+                "LEFT JOIN employe ON employe.num_empl = affectation.num_empl " +
+                "WHERE (LOWER(employe.nom) LIKE ? OR LOWER(employe.prenoms) LIKE ? OR LOWER(employe.num_empl) LIKE ?)" + dateQuery;
 
-                affects.add(tmpAffect);
+        try (PreparedStatement stmt = conn.prepareStatement(sqlQuery)) {
+            int parameterIndex = 1;
+            stmt.setString(parameterIndex++, "%" + search.toLowerCase() + "%");
+            stmt.setString(parameterIndex++, "%" + search.toLowerCase() + "%");
+            stmt.setString(parameterIndex++, "%" + search.toLowerCase() + "%");
+
+            if (dateDebut != null && dateFin != null) {
+                stmt.setDate(parameterIndex++, dateDebut);
+                stmt.setDate(parameterIndex, dateFin);
+            } else if (dateDebut != null) {
+                stmt.setDate(parameterIndex, dateDebut);
+            } else if (dateFin != null) {
+                stmt.setDate(parameterIndex, dateFin);
+            }
+
+            try (ResultSet affectRES = stmt.executeQuery()) {
+                while (affectRES.next()) {
+                    Affectation tmpAffect = new Affectation();
+                    tmpAffect.setNum_affect(affectRES.getString("num_affect"));
+                    tmpAffect.setNum_empl(affectRES.getString("num_empl"));
+                    tmpAffect.setNom_empl(affectRES.getString("nom"));
+                    tmpAffect.setPrenoms_empl(affectRES.getString("prenoms"));
+                    tmpAffect.setAncien_lieu(affectRES.getString("ancien_lieu"));
+                    tmpAffect.setNouveau_lieu(affectRES.getString("design"));
+                    tmpAffect.setDate_affect(affectRES.getDate("date_affect"));
+                    tmpAffect.setDate_priseservice(affectRES.getDate("date_priseservice"));
+
+                    affects.add(tmpAffect);
+                }
             }
         } catch (SQLException e) {
             System.out.println(e);
         }
+
         return affects;
     }
 
